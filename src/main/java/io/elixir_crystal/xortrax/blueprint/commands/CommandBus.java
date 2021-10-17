@@ -1,11 +1,10 @@
 package io.elixir_crystal.xortrax.blueprint.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import io.elixir_crystal.xortrax.blueprint.PlugGividado;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import redempt.redlib.commandmanager.CommandHook;
 
 @AllArgsConstructor
@@ -20,13 +19,13 @@ public class CommandBus {
     }
 
     @CommandHook("create")
-    public void create(CommandSender sender) {
-        Bukkit.getScheduler().runTask(getPlug(), new CreateRunnable(getPlug(), sender));
+    public void create(CommandSender sender, String id) {
+        Bukkit.getScheduler().runTask(getPlug(), new CreateRunnable(getPlug(), sender, id));
     }
 
     @CommandHook("del")
-    public void del(CommandSender sender) {
-        Bukkit.getScheduler().runTask(getPlug(), new DeleteRunnable(getPlug(), sender));
+    public void del(CommandSender sender, String id) {
+        Bukkit.getScheduler().runTask(getPlug(), new DeleteRunnable(getPlug(), sender, id));
     }
 
 }

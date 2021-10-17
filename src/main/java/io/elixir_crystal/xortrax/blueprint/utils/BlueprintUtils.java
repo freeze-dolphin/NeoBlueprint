@@ -4,7 +4,6 @@ import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -17,6 +16,22 @@ public class BlueprintUtils {
 
     private static final String SEP = File.separator;
     private static final String DPTH = Bukkit.getPluginManager().getPlugin("Blueprint").getDataFolder().getPath();
+
+    public static String[] listAll() throws IOException {
+        File f = new File(DPTH + SEP + "storage");
+
+        if (!f.exists()) {
+            if (!f.mkdirs()) throw new IOException("Unable to create storage.");
+        }
+
+        return f.list((dir, name) -> {
+            if (name.endsWith(".yml")) {
+                YamlConfiguration yml = YamlConfiguration.loadConfiguration(new File(dir.getPath() + SEP + name + ".yml"));
+                return yml.contains("target") && yml.contains("recipe");
+            }
+            return false;
+        });
+    }
 
     public static void createRecipe(String id, ItemStack target, ItemStack... ingredients) throws IOException, IllegalStateException {
         File f = new File(DPTH + SEP + "storage" + id + ".yml");

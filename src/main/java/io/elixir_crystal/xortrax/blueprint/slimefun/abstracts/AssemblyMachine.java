@@ -1,5 +1,6 @@
 package io.elixir_crystal.xortrax.blueprint.slimefun.abstracts;
 
+import io.elixir_crystal.xortrax.blueprint.utils.BlueprintUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
@@ -32,6 +33,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import redempt.redlib.misc.FormatUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,11 +67,17 @@ public abstract class AssemblyMachine extends SlimefunItem {
             50, 52
     };
 
+    private static final int output_slot = 51;
+    private static final int[] input_slot = new int[]{
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34
+    };
+
     private static final int process = 49;
     private static final int blueprint_slot = 47;
-    private static final int output_slot = 51;
 
-    public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) {
+    public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) throws IOException {
         super(category, item, id, recipeType, recipe);
         new BlockMenuPreset(id, getInventoryTitle()) {
             public void init() {
@@ -150,7 +158,15 @@ public abstract class AssemblyMachine extends SlimefunItem {
         return new ItemStack(Material.DISPENSER);
     }
 
-    public abstract void registerDefaultRecipes();
+    public void registerDefaultRecipes() throws IOException {
+        for (String id : BlueprintUtils.listAll()) {
+            int duration = 0;
+            for (ItemStack ingredient : BlueprintUtils.getRecipe(id)) {
+                duration += ingredient.getAmount();
+            }
+            registerRecipe(duration * 2, BlueprintUtils.getRecipe(id), new ItemStack[]{BlueprintUtils.getTarget(id)});
+        }
+    }
 
     public abstract int getEnergyConsumption();
 
@@ -159,7 +175,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
     public abstract String getMachineIdentifier();
 
     public int[] getInputSlots() {
-        return new int[]{blueprint_slot};
+        return input_slot;
     }
 
     public int[] getOutputSlots() {
