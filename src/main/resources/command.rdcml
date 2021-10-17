@@ -1,0 +1,24 @@
+blueprint,bpt {
+
+    permission blueprint.cmd
+
+    create string:id {
+        permission blueprint.cmd.create
+        help Create a blueprint for the item on your hand.
+        user player
+        hook create
+    }
+
+    del string:id {
+        permission blueprint.cmd.del
+        help Delete a blueprint with specific id.
+        hook del
+    }
+
+    reload {
+        permission blueprint.cmd.reload
+        help Reload configuration.
+        hook reload
+    }
+
+}

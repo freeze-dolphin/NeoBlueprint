@@ -1,0 +1,9 @@
+name: Blueprint
+
+author: Freeze_Dolphin
+
+main: io.elixir_crystal.xortrax.firearms_hud.PlugGividado
+version: ${project.version}
+
+depend:
+  - RedLib
