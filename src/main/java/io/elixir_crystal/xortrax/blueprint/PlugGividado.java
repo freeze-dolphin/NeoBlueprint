@@ -32,7 +32,6 @@ public class PlugGividado extends JavaPlugin {
     public void onEnable() {
 
         plug = this;
-
         cman = new ConfigManager(this).register(new ConfigBus()).saveDefaults().load();
         new CommandParser(getPlug().getResource("command.rdcml")).parse().register(getPlug().getDescription().getName(),
                 new CommandBus(this));
