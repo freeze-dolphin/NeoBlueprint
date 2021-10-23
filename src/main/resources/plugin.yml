@@ -2,7 +2,7 @@ name: Blueprint
 
 author: Freeze_Dolphin
 
-main: io.elixir_crystal.xortrax.firearms_hud.PlugGividado
+main: io.elixir_crystal.xortrax.blueprint.PlugGividado
 version: ${project.version}
 
 depend:

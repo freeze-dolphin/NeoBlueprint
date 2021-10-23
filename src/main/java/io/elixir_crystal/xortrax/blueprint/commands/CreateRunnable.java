@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import redempt.redlib.inventorygui.InventoryGUI;
+import redempt.redlib.itemutils.ItemBuilder;
 import redempt.redlib.misc.FormatUtils;
 
 import java.io.IOException;
@@ -40,6 +41,10 @@ public class CreateRunnable implements Runnable {
             gui.setOnDestroy(() -> {
                 try {
                     BlueprintUtils.createRecipe(getId(), hand, gui.getInventory().getContents());
+                    getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&aSuccessfully created"));
+                    ((Player) getSender()).getInventory().addItem(new ItemBuilder(Material.PAPER)
+                            .setName("§d蓝图§r")
+                            .setLore("", "§f合成目标: §e" + BlueprintUtils.getTarget(getId()).getItemMeta().getDisplayName(), "§f蓝图编号: §e" + getId()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
