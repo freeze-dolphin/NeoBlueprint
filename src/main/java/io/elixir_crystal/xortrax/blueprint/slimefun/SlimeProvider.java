@@ -44,7 +44,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_1";
             }
-        }).registerChargeableBlock(false, 64);
+        }).register(64);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_2.getItem(),
@@ -65,7 +65,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_2";
             }
-        }).registerChargeableBlock(false, 128);
+        }).register(128);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_3.getItem(),
@@ -86,7 +86,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_3";
             }
-        }).registerChargeableBlock(false, 256);
+        }).register(256);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_4.getItem(),
@@ -107,7 +107,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_4";
             }
-        }).registerChargeableBlock(false, 512);
+        }).register(512);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_5.getItem(),
@@ -128,7 +128,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_5";
             }
-        }).registerChargeableBlock(false, 1024);
+        }).register(1024);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_5.getItem(),
@@ -149,7 +149,7 @@ public class SlimeProvider {
             public String getMachineIdentifier() {
                 return "ASM_MACHINE_6";
             }
-        }).registerChargeableBlock(false, 2048);
+        }).register(2048);
 
         (new DamagableChargableItem
                 (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.BLUEPRINT.getItem(),

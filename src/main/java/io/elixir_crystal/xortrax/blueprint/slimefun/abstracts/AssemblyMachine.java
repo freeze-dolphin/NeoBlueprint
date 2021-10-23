@@ -220,7 +220,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
             BlockStorage.getInventory(b).replaceExistingItem(slot, inv.getItem(slot));
     }
 
-    public void register(boolean slimefun) {
+    public void register(int capability) {
         addItemHandler(new BlockTicker() {
             public void tick(Block b, SlimefunItem sf, Config data) {
                 AssemblyMachine.this.tick(b);
@@ -233,7 +233,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 return false;
             }
         });
-        super.register(slimefun);
+        super.registerChargeableBlock(capability);
     }
 
     protected void tick(Block b) {
