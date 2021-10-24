@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import redempt.redlib.inventorygui.InventoryGUI;
 import redempt.redlib.itemutils.ItemBuilder;
+import redempt.redlib.misc.FormatUtils;
 
 import java.io.IOException;
 
@@ -23,12 +24,15 @@ import java.io.IOException;
 @Getter
 public class SlimeProvider {
 
+    private static final RecipeType EMPTY_RECIPE_TYPE = new RecipeType(new ItemBuilder(Material.BARRIER).setName(FormatUtils.color("&c无合成表&r")));
+    private static final ItemStack[] EMPTY_RECIPE = new ItemStack[]{null, null, null, null, null, null, null, null, null};
+
     public void setup() throws IOException {
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_1.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_1,
                         "ASM_MACHINE_1",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -47,9 +51,9 @@ public class SlimeProvider {
         }).register(64);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_2.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_2,
                         "ASM_MACHINE_2",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -68,9 +72,9 @@ public class SlimeProvider {
         }).register(128);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_3.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_3,
                         "ASM_MACHINE_3",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -89,9 +93,9 @@ public class SlimeProvider {
         }).register(256);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_4.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_4,
                         "ASM_MACHINE_4",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -110,9 +114,9 @@ public class SlimeProvider {
         }).register(512);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_5.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_5,
                         "ASM_MACHINE_5",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -131,9 +135,9 @@ public class SlimeProvider {
         }).register(1024);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.ASM_MACHINE_5.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_5,
                         "ASM_MACHINE_6",
-                        RecipeType.NULL, new ItemStack[]{}) {
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
             @Override
             public int getEnergyConsumption() {
@@ -152,32 +156,37 @@ public class SlimeProvider {
         }).register(2048);
 
         (new DamagableChargableItem
-                (BlueprintCategories.BLUEPRINT.getCategory(), BlueprintItems.BLUEPRINT.getItem(),
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.BLUEPRINT,
                         "BLUEPRINT",
-                        RecipeType.NULL, new ItemStack[]{}, "Blueprint"))
+                        EMPTY_RECIPE_TYPE, EMPTY_RECIPE, "Blueprint"))
                 .register(false, new ItemInteractionHandler() {
+
                     @SneakyThrows
                     @Override
                     public boolean onRightClick(ItemUseEvent evt, Player plr, ItemStack item) {
-                        if (SlimefunManager.isItemSimiliar(item, BlueprintItems.BLUEPRINT.getItem(), false))
+                        if (SlimefunManager.isItemSimiliar(item, BlueprintItems.BLUEPRINT, false))
                             return true;
 
-                        final String id = ChatColor.stripColor(item.getItemMeta().getDisplayName()).split(": ")[1];
+                        try {
+                            String[] idd = ChatColor.stripColor(item.getItemMeta().getDisplayName()).split(": ");
 
-                        InventoryGUI gui = new InventoryGUI(45, "§9蓝图 §8[§f" + BlueprintUtils.getTarget(id).getItemMeta().getDisplayName() + "§f]");
-                        for (int i = 0; i < 9; i++) {
-                            gui.getInventory().setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
-                        }
-                        for (int i = 0; i < 3; i++) {
-                            gui.getInventory().setItem(i * 9 + 9, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
-                            gui.getInventory().setItem(i * 9 + 17, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
-                        }
-                        for (int i = 0; i < 9; i++) {
-                            if (i != 4)
-                                gui.getInventory().setItem(i + 36, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
-                        }
-                        gui.getInventory().setItem(40, item);
+                            final String id = idd[idd.length - 1];
 
+                            InventoryGUI gui = new InventoryGUI(45, "§9蓝图 §8[§f" + BlueprintUtils.getTarget(id).getItemMeta().getDisplayName() + "§f]");
+                            for (int i = 0; i < 9; i++) {
+                                gui.getInventory().setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
+                            }
+                            for (int i = 0; i < 3; i++) {
+                                gui.getInventory().setItem(i * 9 + 9, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
+                                gui.getInventory().setItem(i * 9 + 17, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
+                            }
+                            for (int i = 0; i < 9; i++) {
+                                if (i != 4)
+                                    gui.getInventory().setItem(i + 36, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
+                            }
+                            gui.getInventory().setItem(40, item);
+                        } catch (NullPointerException ignored) {
+                        }
                         return false;
                     }
                 });
