@@ -10,7 +10,6 @@ import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.DamagableChargableItem;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.handlers.ItemInteractionHandler;
 import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +26,7 @@ public class SlimeProvider {
     private static final RecipeType EMPTY_RECIPE_TYPE = new RecipeType(new ItemBuilder(Material.BARRIER).setName(FormatUtils.color("&c无合成表&r")));
     private static final ItemStack[] EMPTY_RECIPE = new ItemStack[]{null, null, null, null, null, null, null, null, null};
 
-    public void setup() throws IOException {
+    public void setup() {
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_1,
@@ -135,7 +134,7 @@ public class SlimeProvider {
         }).register(1024);
 
         (new AssemblyMachine
-                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_5,
+                (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_6,
                         "ASM_MACHINE_6",
                         EMPTY_RECIPE_TYPE, EMPTY_RECIPE) {
 
@@ -168,9 +167,7 @@ public class SlimeProvider {
                             return true;
 
                         try {
-                            String[] idd = ChatColor.stripColor(item.getItemMeta().getDisplayName()).split(": ");
-
-                            final String id = idd[idd.length - 1];
+                            final String id = BlueprintUtils.getIdByItem(item);
 
                             InventoryGUI gui = new InventoryGUI(45, "§9蓝图 §8[§f" + BlueprintUtils.getTarget(id).getItemMeta().getDisplayName() + "§f]");
                             for (int i = 0; i < 9; i++) {
@@ -185,7 +182,7 @@ public class SlimeProvider {
                                     gui.getInventory().setItem(i + 36, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
                             }
                             gui.getInventory().setItem(40, item);
-                        } catch (NullPointerException ignored) {
+                        } catch (NullPointerException | IOException | IllegalStateException ignored) {
                         }
                         return false;
                     }

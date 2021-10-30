@@ -2,6 +2,7 @@ package io.elixir_crystal.xortrax.blueprint.utils;
 
 import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
@@ -104,4 +105,8 @@ public class BlueprintUtils {
         return null;
     }
 
+    public static String getIdByItem(ItemStack item) {
+        String[] idd = ChatColor.stripColor(item.getItemMeta().getDisplayName()).split(": ");
+        return idd[idd.length - 1];
+    }
 }

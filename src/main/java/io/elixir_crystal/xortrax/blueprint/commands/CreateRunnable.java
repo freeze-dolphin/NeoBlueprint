@@ -33,7 +33,7 @@ public class CreateRunnable implements Runnable {
                 return;
             }
 
-            InventoryGUI gui = new InventoryGUI(21, "§9绘制蓝图 §8(" + getId() + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
+            InventoryGUI gui = new InventoryGUI(27, "§9绘制蓝图 §8(" + getId() + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
             for (int i = 0; i < 27; i++) {
                 gui.openSlot(i);
             }

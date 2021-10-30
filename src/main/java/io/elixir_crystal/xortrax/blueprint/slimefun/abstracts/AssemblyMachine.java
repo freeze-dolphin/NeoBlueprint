@@ -33,7 +33,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 import redempt.redlib.misc.FormatUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +76,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
     private static final int process = 49;
     private static final int blueprint_slot = 47;
 
-    public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) throws IOException {
+    public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, id, recipeType, recipe);
         new BlockMenuPreset(id, getInventoryTitle()) {
             public void init() {
@@ -105,13 +104,13 @@ public abstract class AssemblyMachine extends SlimefunItem {
             public boolean onBreak(Player p, Block b, SlimefunItem item, UnregisterReason reason) {
                 BlockMenu inv = BlockStorage.getInventory(b);
                 if (inv != null) {
-                    for (int slot : AssemblyMachine.this.getInputSlots()) {
+                    for (int slot : input_slot) {
                         if (inv.getItemInSlot(slot) != null) {
                             b.getWorld().dropItemNaturally(b.getLocation(), inv.getItemInSlot(slot));
                             inv.replaceExistingItem(slot, null);
                         }
                     }
-                    for (int slot : AssemblyMachine.this.getOutputSlots()) {
+                    for (int slot : new int[]{output_slot, blueprint_slot}) {
                         if (inv.getItemInSlot(slot) != null) {
                             b.getWorld().dropItemNaturally(b.getLocation(), inv.getItemInSlot(slot));
                             inv.replaceExistingItem(slot, null);
@@ -123,7 +122,6 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 return true;
             }
         });
-        registerDefaultRecipes();
     }
 
     protected void constructMenu(BlockMenuPreset preset) {
@@ -136,7 +134,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
         for (int i : border_out) {
             preset.addItem(i, new CustomItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 1), " "), (arg0, arg1, arg2, arg3) -> false);
         }
-        preset.addItem(22, new CustomItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), " "), (arg0, arg1, arg2, arg3) -> false);
+        preset.addItem(process, new CustomItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), " "), (arg0, arg1, arg2, arg3) -> false);
         for (int i : getOutputSlots()) {
             preset.addMenuClickHandler(i, new ChestMenu.AdvancedMenuClickHandler() {
                 public boolean onClick(Player p, int slot, ItemStack cursor, ClickAction action) {
@@ -156,16 +154,6 @@ public abstract class AssemblyMachine extends SlimefunItem {
 
     public ItemStack getProgressBar() {
         return new ItemStack(Material.DISPENSER);
-    }
-
-    public void registerDefaultRecipes() throws IOException {
-        for (String id : BlueprintUtils.listAll()) {
-            int duration = 0;
-            for (ItemStack ingredient : BlueprintUtils.getRecipe(id)) {
-                duration += ingredient.getAmount();
-            }
-            registerRecipe(duration * 2, BlueprintUtils.getRecipe(id), new ItemStack[]{BlueprintUtils.getTarget(id)});
-        }
     }
 
     public abstract int getEnergyConsumption();
@@ -190,15 +178,6 @@ public abstract class AssemblyMachine extends SlimefunItem {
         return (getProcessing(b) != null);
     }
 
-    public void registerRecipe(MachineRecipe recipe) {
-        recipe.setTicks(recipe.getTicks() / getSpeed());
-        this.recipes.add(recipe);
-    }
-
-    public void registerRecipe(int seconds, ItemStack[] input, ItemStack[] output) {
-        registerRecipe(new MachineRecipe(seconds, input, output));
-    }
-
     private Inventory inject(Block b) {
         int size = BlockStorage.getInventory(b).toInventory().getSize();
         Inventory inv = Bukkit.createInventory(null, size);
@@ -220,7 +199,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
             BlockStorage.getInventory(b).replaceExistingItem(slot, inv.getItem(slot));
     }
 
-        public void register(int capacity) {
+    public void register(int capacity) {
         addItemHandler(new BlockTicker() {
             public void tick(Block b, SlimefunItem sf, Config data) {
                 AssemblyMachine.this.tick(b);
@@ -237,6 +216,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
     }
 
     protected void tick(Block b) {
+        BlockMenu bm = BlockStorage.getInventory(b);
         if (isProcessing(b)) {
             int timeleft = progress.get(b);
             if (timeleft > 0) {
@@ -250,7 +230,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 lore.add(MachineHelper.getTimeLeft(timeleft / 2));
                 im.setLore(lore);
                 item.setItemMeta(im);
-                BlockStorage.getInventory(b).replaceExistingItem(22, item);
+                bm.replaceExistingItem(process, item);
                 if (ChargableBlock.isChargable(b)) {
                     if (ChargableBlock.getCharge(b) < getEnergyConsumption())
                         return;
@@ -258,7 +238,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 }
                 progress.put(b, timeleft - 1);
             } else {
-                BlockStorage.getInventory(b).replaceExistingItem(22, new CustomItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), " "));
+                bm.replaceExistingItem(process, new CustomItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) 15), " "));
                 pushItems(b, processing.get(b).getOutput().clone());
                 progress.remove(b);
                 processing.remove(b);
@@ -266,28 +246,38 @@ public abstract class AssemblyMachine extends SlimefunItem {
         } else {
             MachineRecipe r = null;
             Map<Integer, Integer> found = new HashMap<>();
-            for (MachineRecipe recipe : this.recipes) {
-                for (ItemStack input : recipe.getInput()) {
-                    for (int slot : getInputSlots()) {
-                        if (SlimefunManager.isItemSimiliar(BlockStorage.getInventory(b).getItemInSlot(slot), input, true)) {
-                            found.put(slot, input.getAmount());
-                            break;
+
+            try {
+                String id = BlueprintUtils.getIdByItem(bm.getItemInSlot(blueprint_slot));
+                if (id != null) {
+                    ItemStack[] recipe = BlueprintUtils.getRecipe(id);
+                    int tAmount = 1;
+                    for (ItemStack im : recipe) {
+                        tAmount += im.getAmount();
+                    }
+                    r = new MachineRecipe(tAmount, recipe, new ItemStack[]{BlueprintUtils.getTarget(id)});
+                }
+
+                if (r != null) {
+                    for (ItemStack input : r.getInput()) {
+                        for (int slot : getInputSlots()) {
+                            if (SlimefunManager.isItemSimiliar(bm.getItemInSlot(slot), input, true)) {
+                                found.put(slot, input.getAmount());
+                                break;
+                            }
                         }
                     }
+                    if (found.size() == r.getInput().length) {
+                        if (!fits(b, r.getOutput())) {
+                            return;
+                        }
+                        for (Map.Entry<Integer, Integer> entry : found.entrySet())
+                            BlockStorage.getInventory(b).replaceExistingItem(entry.getKey(), InvUtils.decreaseItem(bm.getItemInSlot(entry.getKey()), entry.getValue()));
+                        processing.put(b, r);
+                        progress.put(b, r.getTicks());
+                    }
                 }
-                if (found.size() == (recipe.getInput()).length) {
-                    r = recipe;
-                    break;
-                }
-                found.clear();
-            }
-            if (r != null) {
-                if (!fits(b, r.getOutput()))
-                    return;
-                for (Map.Entry<Integer, Integer> entry : found.entrySet())
-                    BlockStorage.getInventory(b).replaceExistingItem(entry.getKey(), InvUtils.decreaseItem(BlockStorage.getInventory(b).getItemInSlot(entry.getKey()), entry.getValue()));
-                processing.put(b, r);
-                progress.put(b, r.getTicks());
+            } catch (Exception ignored) {
             }
         }
     }
