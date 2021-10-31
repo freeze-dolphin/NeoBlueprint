@@ -49,6 +49,8 @@ public class CreateRunnable implements Runnable {
                     e.printStackTrace();
                 }
             });
+
+            gui.open(p);
         } catch (Exception e) {
             e.printStackTrace();
             getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred"));
