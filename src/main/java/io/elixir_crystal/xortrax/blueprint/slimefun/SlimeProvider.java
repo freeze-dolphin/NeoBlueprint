@@ -4,7 +4,6 @@ import io.elixir_crystal.xortrax.blueprint.slimefun.abstracts.AssemblyMachine;
 import io.elixir_crystal.xortrax.blueprint.utils.BlueprintUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import me.mrCookieSlime.CSCoreLibPlugin.events.ItemUseEvent;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.DamagableChargableItem;
@@ -42,12 +41,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 1;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_1";
-            }
-        }).register(64);
+        }).registerChargeableBlock(64);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_2,
@@ -63,12 +57,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 1;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_2";
-            }
-        }).register(128);
+        }).registerChargeableBlock(128);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_3,
@@ -84,12 +73,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 2;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_3";
-            }
-        }).register(256);
+        }).registerChargeableBlock(256);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_4,
@@ -105,12 +89,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 3;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_4";
-            }
-        }).register(512);
+        }).registerChargeableBlock(512);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_5,
@@ -126,12 +105,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 4;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_5";
-            }
-        }).register(1024);
+        }).registerChargeableBlock(1024);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_6,
@@ -147,12 +121,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 8;
             }
-
-            @Override
-            public String getMachineIdentifier() {
-                return "ASM_MACHINE_6";
-            }
-        }).register(2048);
+        }).registerChargeableBlock(2048);
 
         (new DamagableChargableItem
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.BLUEPRINT,
@@ -160,7 +129,6 @@ public class SlimeProvider {
                         EMPTY_RECIPE_TYPE, EMPTY_RECIPE, "Blueprint"))
                 .register(false, new ItemInteractionHandler() {
 
-                    @SneakyThrows
                     @Override
                     public boolean onRightClick(ItemUseEvent evt, Player plr, ItemStack item) {
                         if (SlimefunManager.isItemSimiliar(item, BlueprintItems.BLUEPRINT, false))
