@@ -12,8 +12,6 @@ import redempt.redlib.inventorygui.InventoryGUI;
 import redempt.redlib.itemutils.ItemBuilder;
 import redempt.redlib.misc.FormatUtils;
 
-import java.io.IOException;
-
 @AllArgsConstructor
 @Getter
 public class CreateRunnable implements Runnable {
@@ -45,9 +43,10 @@ public class CreateRunnable implements Runnable {
                     ((Player) getSender()).getInventory().addItem(new ItemBuilder(Material.PAPER)
                             .setName("§d蓝图§r")
                             .setLore("", "§f合成目标: §e" + BlueprintUtils.getTarget(getId()).getItemMeta().getDisplayName(), "§f蓝图编号: §e" + getId()));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred: " + e.getMessage()));
                 }
+
             });
 
             gui.open(p);

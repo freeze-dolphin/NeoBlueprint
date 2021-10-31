@@ -22,12 +22,11 @@ public class DeleteRunnable implements Runnable {
     @Override
     public void run() {
         try {
-            if (new File(Bukkit.getPluginManager().getPlugin("Blueprint").getDataFolder().getPath() + SEP + "storage" + getId() + ".yml").delete()) {
+            if (new File(Bukkit.getPluginManager().getPlugin("Blueprint").getDataFolder().getPath() + SEP + "storage" + SEP + getId() + ".yml").delete()) {
                 getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&aSuccessfully deleted"));
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred"));
+            getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred: " + e.getMessage()));
         }
     }
 

@@ -24,11 +24,15 @@ public class PlugGividado extends JavaPlugin {
         new CommandParser(getPlug().getResource("command.rdcml")).parse().register(getPlug().getDescription().getName(),
                 new CommandBus(this));
 
-        new SlimeProvider().setup();
+        new SlimeProvider(this).setup();
     }
 
     public String getPrefix() {
         return cman.getConfig().getString("prefix");
+    }
+
+    public boolean isDebug() {
+        return cman.getConfig().getBoolean("debug");
     }
 
 }

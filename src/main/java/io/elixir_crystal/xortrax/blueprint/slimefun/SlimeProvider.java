@@ -1,5 +1,6 @@
 package io.elixir_crystal.xortrax.blueprint.slimefun;
 
+import io.elixir_crystal.xortrax.blueprint.PlugGividado;
 import io.elixir_crystal.xortrax.blueprint.slimefun.abstracts.AssemblyMachine;
 import io.elixir_crystal.xortrax.blueprint.utils.BlueprintUtils;
 import lombok.Getter;
@@ -24,6 +25,8 @@ public class SlimeProvider {
 
     private static final RecipeType EMPTY_RECIPE_TYPE = new RecipeType(new ItemBuilder(Material.BARRIER).setName(FormatUtils.color("&c无合成表&r")));
     private static final ItemStack[] EMPTY_RECIPE = new ItemStack[]{null, null, null, null, null, null, null, null, null};
+
+    private final PlugGividado plug;
 
     public void setup() {
 
@@ -131,13 +134,13 @@ public class SlimeProvider {
 
                     @Override
                     public boolean onRightClick(ItemUseEvent evt, Player plr, ItemStack item) {
-                        if (SlimefunManager.isItemSimiliar(item, BlueprintItems.BLUEPRINT, false))
-                            return true;
+                        if (!SlimefunManager.isItemSimiliar(item, BlueprintItems.BLUEPRINT, false)) return true;
 
                         try {
                             final String id = BlueprintUtils.getIdByItem(item);
+                            if (getPlug().isDebug()) getPlug().getLogger().warning(id);
 
-                            InventoryGUI gui = new InventoryGUI(45, "§9蓝图 §8[§f" + BlueprintUtils.getTarget(id).getItemMeta().getDisplayName() + "§f]");
+                            InventoryGUI gui = new InventoryGUI(45, "§9蓝图 §8[§f" + BlueprintUtils.getTarget(id).getItemMeta().getDisplayName() + "§8]");
                             for (int i = 0; i < 9; i++) {
                                 gui.getInventory().setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
                             }
@@ -150,7 +153,12 @@ public class SlimeProvider {
                                     gui.getInventory().setItem(i + 36, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
                             }
                             gui.getInventory().setItem(40, item);
-                        } catch (NullPointerException | IOException | IllegalStateException ignored) {
+                            for (ItemStack ingredient : BlueprintUtils.getRecipe(id)) {
+                                gui.getInventory().addItem(ingredient);
+                            }
+                            gui.open(plr);
+                        } catch (Exception e) {
+                            if (getPlug().isDebug()) e.printStackTrace();
                         }
                         return false;
                     }

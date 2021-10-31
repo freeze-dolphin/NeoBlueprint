@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class BlueprintUtils {
 
     private static final String SEP = File.separator;
@@ -35,7 +36,7 @@ public class BlueprintUtils {
     }
 
     public static void createRecipe(String id, ItemStack target, ItemStack... ingredients) throws IOException, IllegalStateException {
-        File f = new File(DPTH + SEP + "storage" + id + ".yml");
+        File f = new File(DPTH + SEP + "storage" + SEP + id + ".yml");
 
         if (!f.exists()) {
             if (!f.createNewFile()) throw new IOException("Unable to create recipe.");
@@ -54,7 +55,7 @@ public class BlueprintUtils {
     }
 
     public static ItemStack[] getRecipe(String id) throws IOException {
-        File f = new File(DPTH + SEP + "storage" + id + ".yml");
+        File f = new File(DPTH + SEP + "storage" + SEP + id + ".yml");
 
         if (!f.exists()) throw new IOException("Blueprint not found.");
 
@@ -66,11 +67,13 @@ public class BlueprintUtils {
         for (int i = 0; i < yml.createSection("recipe").getKeys(false).size(); i++) {
             r.add(yml.getItemStack("recipe." + i));
         }
-        return r.toArray(new ItemStack[0]);
+        // TODO this method returns empty things, so player cannot see any ingredients in blueprint preview
+        ItemStack[] rr = new ItemStack[r.size()];
+        return r.toArray(rr);
     }
 
     public static ItemStack getTarget(String id) throws IOException {
-        File f = new File(DPTH + SEP + "storage" + id + ".yml");
+        File f = new File(DPTH + SEP + "storage" + SEP + id + ".yml");
 
         if (!f.exists()) throw new IOException("Blueprint not found.");
 
@@ -106,7 +109,7 @@ public class BlueprintUtils {
     }
 
     public static String getIdByItem(ItemStack item) {
-        String[] idd = ChatColor.stripColor(item.getItemMeta().getDisplayName()).split(": ");
+        String[] idd = ChatColor.stripColor(item.getItemMeta().getLore().get(2)).split(": ");
         return idd[idd.length - 1];
     }
 }

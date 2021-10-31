@@ -20,8 +20,7 @@ public class ReloadRunnable implements Runnable {
             getPlug().getCman().load();
             getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&fReloaded"));
         } catch (Exception e) {
-            e.printStackTrace();
-            getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred"));
+            getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred: " + e.getMessage()));
         }
     }
 
