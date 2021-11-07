@@ -1,14 +1,13 @@
 package io.elixir_crystal.xortrax.blueprint.slimefun.abstracts;
 
 import io.elixir_crystal.xortrax.blueprint.utils.BlueprintUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.CSCoreLib;
+import io.elixir_crystal.xortrax.blueprint.utils.CommonUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.InvUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
-import me.mrCookieSlime.Slimefun.Misc.compatibles.ProtectionUtils;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunBlockHandler;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
@@ -38,20 +37,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unused")
 public abstract class AssemblyMachine extends SlimefunItem {
 
-    public static boolean reflectCanOpenMethod(Block b, Player p) {
-        try {
-            Class.forName("me.mrCookieSlime.Slimefun.Misc.compatibles.ProtectionUtils");
-            boolean perm = (p.hasPermission("slimefun.inventory.bypass")) || (CSCoreLib.getLib().getProtectionManager().canAccessChest(p.getUniqueId(), b, true));
-            return (perm) && (ProtectionUtils.canAccessItem(p, b));
-        } catch (ClassNotFoundException cnfe) {
-            return p.hasPermission("slimefun.inventory.bypass") || CSCoreLib.getLib().getProtectionManager().canAccessChest(p.getUniqueId(), b, true);
-        }
-    }
-
-    protected static final int indicator = 49;
     private static final int[] border = new int[]{
             0, 1, 2, 3, 4, 5, 6, 7, 8,
             9, 17,
@@ -78,15 +65,23 @@ public abstract class AssemblyMachine extends SlimefunItem {
             28, 29, 30, 31, 32, 33, 34
     };
 
+    private static final int process = 49;
     private static final int blueprint_slot = 47;
-
-
     private final String id;
+
     public static Map<Block, MachineRecipe> processing = new HashMap<>();
     public static Map<Block, Integer> progress = new HashMap<>();
 
+    private static final boolean debug = true;
+
+    private static void dlog(String s) {
+        if (debug) System.out.println(s);
+    }
+
     public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, id, recipeType, recipe);
+
+        dlog("Construction");
 
         this.id = id;
 
@@ -96,10 +91,11 @@ public abstract class AssemblyMachine extends SlimefunItem {
             }
 
             public void newInstance(BlockMenu menu, Block b) {
+                dlog("newInstance");
             }
 
             public boolean canOpen(Block b, Player p) {
-                return reflectCanOpenMethod(b, p);
+                return CommonUtils.reflectCanOpenMethod(b, p);
             }
 
             public int[] getSlotsAccessedByItemTransport(ItemTransportFlow flow) {
@@ -136,7 +132,16 @@ public abstract class AssemblyMachine extends SlimefunItem {
         });
     }
 
+    public int[] getInputSlots() {
+        return input_slot;
+    }
+
+    public int[] getOutputSlots() {
+        return new int[]{output_slot};
+    }
+
     protected void constructMenu(BlockMenuPreset preset) {
+        dlog("constructMenu");
         for (int i : border) {
             preset.addItem(i,
                     new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7).setName(" "),
@@ -152,7 +157,8 @@ public abstract class AssemblyMachine extends SlimefunItem {
                     new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(1).setName(" "),
                     (arg0, arg1, arg2, arg3) -> false);
         }
-        preset.addItem(indicator, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(5).setName(" "), (arg0, arg1, arg2, arg3) -> false);
+        preset.addItem(process, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(5).setName(" "), (arg0, arg1, arg2, arg3) -> false);
+
         for (int i : getOutputSlots()) {
             preset.addMenuClickHandler(i, new ChestMenu.AdvancedMenuClickHandler() {
                 public boolean onClick(Player p, int slot, ItemStack cursor, ClickAction action) {
@@ -175,23 +181,18 @@ public abstract class AssemblyMachine extends SlimefunItem {
         return new ItemStack(Material.DISPENSER);
     }
 
-    public int[] getInputSlots() {
-        return input_slot;
-    }
-
-    public int[] getOutputSlots() {
-        return new int[]{output_slot};
-    }
-
     public abstract int getEnergyConsumption();
 
     public abstract int getSpeed();
 
+    @SuppressWarnings("unused")
     public String getMachineIdentifier() {
-        return this.id;
+        dlog("getMachineIdentifier");
+        return id;
     }
 
     public MachineRecipe getProcessing(Block b) {
+        dlog("getProcessing");
         return processing.get(b);
     }
 
@@ -223,36 +224,41 @@ public abstract class AssemblyMachine extends SlimefunItem {
         }
     }
 
-    public void register(boolean slimefun) {
-        addItemHandler(new BlockTicker() {
+    public void register(int capacity) {
+        dlog("register");
+        this.addItemHandler(new BlockTicker() {
+
+            @Override
             public void tick(Block b, SlimefunItem sf, Config data) {
-                AssemblyMachine.this.tick(b);
+                dlog("register -> tick");
+                blockTick(b);
             }
 
+            @Override
             public void uniqueTick() {
             }
 
+            @Override
             public boolean isSynchronized() {
                 return false;
             }
         });
-        super.register(slimefun);
+        super.registerChargeableBlock(capacity);
     }
 
-    protected void tick(Block b) {
-
+    protected void blockTick(Block b) {
+        dlog("tick");
         if (b.getBlockPower() > 1) {
             return;
         }
 
-        ItemMeta im;
         BlockMenu bm = BlockStorage.getInventory(b);
         if (isProcessing(b)) {
             int timeleft = progress.get(b);
             if (timeleft > 0) {
                 ItemStack item = getProgressBar().clone();
                 item.setDurability(MachineHelper.getDurability(item, timeleft, processing.get(b).getTicks()));
-                im = item.getItemMeta();
+                ItemMeta im = item.getItemMeta();
                 im.setDisplayName(" ");
                 List<String> lore = new ArrayList<>();
                 lore.add(MachineHelper.getProgress(timeleft, processing.get(b).getTicks()));
@@ -260,20 +266,16 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 lore.add(MachineHelper.getTimeLeft(timeleft / 2));
                 im.setLore(lore);
                 item.setItemMeta(im);
-
-                BlockStorage.getInventory(b).replaceExistingItem(indicator, item);
+                bm.replaceExistingItem(process, item);
                 if (ChargableBlock.isChargable(b)) {
-                    if (ChargableBlock.getCharge(b) < getEnergyConsumption()) {
+                    if (ChargableBlock.getCharge(b) < getEnergyConsumption())
                         return;
-                    }
                     ChargableBlock.addCharge(b, -getEnergyConsumption());
                 }
                 progress.put(b, timeleft - 1);
             } else {
-                BlockStorage.getInventory(b).replaceExistingItem(indicator,
-                        new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(15).setName(" "));
+                bm.replaceExistingItem(process, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(15).setName(" "));
                 pushItems(b, processing.get(b).getOutput().clone());
-
                 progress.remove(b);
                 processing.remove(b);
             }
@@ -288,8 +290,8 @@ public abstract class AssemblyMachine extends SlimefunItem {
                 if (id != null) {
                     ItemStack[] recipe = BlueprintUtils.getRecipe(id);
                     int tAmount = 1;
-                    for (ItemStack it : recipe) {
-                        tAmount += it.getAmount();
+                    for (ItemStack im : recipe) {
+                        tAmount += im.getAmount();
                     }
                     r = new MachineRecipe(tAmount / getSpeed(), recipe, new ItemStack[]{BlueprintUtils.getTarget(id)});
                 }

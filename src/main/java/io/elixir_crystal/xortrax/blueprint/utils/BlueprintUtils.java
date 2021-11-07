@@ -9,8 +9,6 @@ import org.bukkit.inventory.ItemStack;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -63,13 +61,11 @@ public class BlueprintUtils {
 
         if (!yml.contains("recipe")) throw new IllegalStateException("This is not a valid blueprint.");
 
-        List<ItemStack> r = new ArrayList<>();
-        for (int i = 0; i < yml.createSection("recipe").getKeys(false).size(); i++) {
-            r.add(yml.getItemStack("recipe." + i));
+        ItemStack[] rr = new ItemStack[yml.getConfigurationSection("recipe").getKeys(false).size()];
+        for (int i = 0; i < yml.getConfigurationSection("recipe").getKeys(false).size(); i++) {
+            rr[i] = yml.getItemStack("recipe." + i);
         }
-        // TODO this method returns empty things, so player cannot see any ingredients in blueprint preview
-        ItemStack[] rr = new ItemStack[r.size()];
-        return r.toArray(rr);
+        return rr;
     }
 
     public static ItemStack getTarget(String id) throws IOException {
