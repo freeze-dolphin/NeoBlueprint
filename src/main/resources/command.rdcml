@@ -15,6 +15,12 @@ blueprint,bpt {
         hook del
     }
 
+    get string:id {
+        permission blueprint.cmd.get
+        help Get a blueprint with specific id.
+        hook get
+    }
+
     reload {
         permission blueprint.cmd.reload
         help Reload configuration.

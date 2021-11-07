@@ -6,7 +6,6 @@ import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ClickAction;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.InvUtils;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunBlockHandler;
@@ -72,17 +71,8 @@ public abstract class AssemblyMachine extends SlimefunItem {
     public static Map<Block, MachineRecipe> processing = new HashMap<>();
     public static Map<Block, Integer> progress = new HashMap<>();
 
-    private static final boolean debug = true;
-
-    private static void dlog(String s) {
-        if (debug) System.out.println(s);
-    }
-
     public AssemblyMachine(Category category, ItemStack item, String id, RecipeType recipeType, ItemStack[] recipe) {
         super(category, item, id, recipeType, recipe);
-
-        dlog("Construction");
-
         this.id = id;
 
         new BlockMenuPreset(id, getInventoryTitle()) {
@@ -91,7 +81,6 @@ public abstract class AssemblyMachine extends SlimefunItem {
             }
 
             public void newInstance(BlockMenu menu, Block b) {
-                dlog("newInstance");
             }
 
             public boolean canOpen(Block b, Player p) {
@@ -141,7 +130,6 @@ public abstract class AssemblyMachine extends SlimefunItem {
     }
 
     protected void constructMenu(BlockMenuPreset preset) {
-        dlog("constructMenu");
         for (int i : border) {
             preset.addItem(i,
                     new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7).setName(" "),
@@ -187,12 +175,10 @@ public abstract class AssemblyMachine extends SlimefunItem {
 
     @SuppressWarnings("unused")
     public String getMachineIdentifier() {
-        dlog("getMachineIdentifier");
         return id;
     }
 
     public MachineRecipe getProcessing(Block b) {
-        dlog("getProcessing");
         return processing.get(b);
     }
 
@@ -204,7 +190,7 @@ public abstract class AssemblyMachine extends SlimefunItem {
         int size = BlockStorage.getInventory(b).toInventory().getSize();
         Inventory inv = Bukkit.createInventory(null, size);
         for (int i = 0; i < size; i++) {
-            inv.setItem(i, new CustomItem(Material.COMMAND, " &4ALL YOUR PLACEHOLDERS ARE BELONG TO US", 0));
+            inv.setItem(i, new ItemBuilder(Material.COMMAND).setName(" &4ALL YOUR PLACEHOLDERS ARE BELONG TO US"));
         }
         for (int slot : getOutputSlots()) {
             inv.setItem(slot, BlockStorage.getInventory(b).getItemInSlot(slot));
@@ -224,30 +210,23 @@ public abstract class AssemblyMachine extends SlimefunItem {
         }
     }
 
-    public void register(int capacity) {
-        dlog("register");
-        this.addItemHandler(new BlockTicker() {
-
-            @Override
+    public void register(boolean slimefun) {
+        addItemHandler(new BlockTicker() {
             public void tick(Block b, SlimefunItem sf, Config data) {
-                dlog("register -> tick");
-                blockTick(b);
+                AssemblyMachine.this.tick(b);
             }
 
-            @Override
             public void uniqueTick() {
             }
 
-            @Override
             public boolean isSynchronized() {
                 return false;
             }
         });
-        super.registerChargeableBlock(capacity);
+        super.register(slimefun);
     }
 
-    protected void blockTick(Block b) {
-        dlog("tick");
+    protected void tick(Block b) {
         if (b.getBlockPower() > 1) {
             return;
         }

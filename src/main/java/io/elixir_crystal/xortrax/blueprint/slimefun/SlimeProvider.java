@@ -2,24 +2,11 @@ package io.elixir_crystal.xortrax.blueprint.slimefun;
 
 import io.elixir_crystal.xortrax.blueprint.PlugGividado;
 import io.elixir_crystal.xortrax.blueprint.slimefun.abstracts.AssemblyMachine;
-import io.elixir_crystal.xortrax.blueprint.utils.BlueprintUtils;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import me.mrCookieSlime.CSCoreLibPlugin.Configuration.Config;
-import me.mrCookieSlime.CSCoreLibPlugin.events.ItemUseEvent;
-import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
-import me.mrCookieSlime.CSCoreLibPlugin.general.World.CustomSkull;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.DamagableChargableItem;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
-import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.handlers.ItemInteractionHandler;
-import me.mrCookieSlime.Slimefun.Setup.SlimefunManager;
-import me.mrCookieSlime.Slimefun.api.energy.EnergyTicker;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import redempt.redlib.inventorygui.InventoryGUI;
 import redempt.redlib.itemutils.ItemBuilder;
 import redempt.redlib.misc.FormatUtils;
 
@@ -32,23 +19,7 @@ public class SlimeProvider {
 
     private final PlugGividado plug;
 
-    public void setup() throws Exception {
-
-        (new SlimefunItem(BlueprintCategories.BLUEPRINT, new CustomItem(CustomSkull.getItem(
-                "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y5ZjM1NmY1ZmU3ZDFiYzkyY2RkZmFlYmEzZWU3NzNhYzlkZjFjYzRkMWMyZjhmZTVmNDcwMTMwMzJjNTUxZCJ9fX0="),
-                "&7恶臭发电机&r", "", "&r当接收到红石信号时工作", "", "&8？？发电机", "&8⇨ &e⚡ &7发电效率由接收到的红石信号强度决定 (114514)"), "ENDLESS_GENERATOR_114514",
-                EMPTY_RECIPE_TYPE, EMPTY_RECIPE)).register(false, new EnergyTicker() {
-
-            @Override
-            public boolean explode(Location paramLocation) {
-                return false;
-            }
-
-            @Override
-            public double generateEnergy(Location l, SlimefunItem paramSlimefunItem, Config paramConfig) {
-                return l.getBlock().getBlockPower() * 114514;
-            }
-        });
+    public void setup() {
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_1,
@@ -64,7 +35,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 1;
             }
-        }).register(64);
+        }).registerChargeableBlock(64);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_2,
@@ -80,7 +51,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 1;
             }
-        }).register(128);
+        }).registerChargeableBlock(128);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_3,
@@ -96,7 +67,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 2;
             }
-        }).register(256);
+        }).registerChargeableBlock(256);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_4,
@@ -112,7 +83,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 3;
             }
-        }).register(512);
+        }).registerChargeableBlock(512);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_5,
@@ -128,7 +99,7 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 4;
             }
-        }).register(1024);
+        }).registerChargeableBlock(1024);
 
         (new AssemblyMachine
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.ASM_MACHINE_6,
@@ -144,8 +115,9 @@ public class SlimeProvider {
             public int getSpeed() {
                 return 8;
             }
-        }).register(2048);
+        }).registerChargeableBlock(2048);
 
+        /*
         (new DamagableChargableItem
                 (BlueprintCategories.BLUEPRINT, BlueprintItems.BLUEPRINT,
                         "BLUEPRINT",
@@ -178,14 +150,16 @@ public class SlimeProvider {
                             }
                             gui.open(plr);
                         } catch (Exception e) {
-                            if (getPlug().isDebug()) {
-                                plr.sendMessage(getPlug().getPrefix() + FormatUtils.color("&c") + e.getMessage());
+                            if (plr.isOp())
+                                plr.sendMessage(getPlug().getPrefix() + "&cError occurred: " + e.getMessage());
+                            if (getPlug().isDebug())
                                 e.printStackTrace();
-                            }
                         }
                         return false;
                     }
                 });
+         */
+
     }
 
 }

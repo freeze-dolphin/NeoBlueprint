@@ -28,4 +28,9 @@ public class CommandBus {
         Bukkit.getScheduler().runTask(getPlug(), new DeleteRunnable(getPlug(), sender, id));
     }
 
+    @CommandHook("get")
+    public void get(CommandSender sender, String id) {
+        Bukkit.getScheduler().runTask(getPlug(), new GetRunnable(getPlug(), sender, id));
+    }
+
 }
