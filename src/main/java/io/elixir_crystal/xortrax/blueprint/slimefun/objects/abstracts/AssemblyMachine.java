@@ -101,7 +101,7 @@ public abstract class AssemblyMachine extends AContainer {
                 BlockMenu inv = BlockStorage.getInventory(b);
                 if (inv != null) {
                     for (int slot : getInputSlots()) {
-                        if (inv.getItemInSlot(slot) != null) {
+                        if (inv.getItemInSlot(slot) != null && !SlimefunManager.isItemSimiliar(inv.getItemInSlot(slot), new CustomItem(new UniversalMaterial(Material.STRUCTURE_VOID), " "), true)) {
                             b.getWorld().dropItemNaturally(b.getLocation(), inv.getItemInSlot(slot));
                             inv.replaceExistingItem(slot, null);
                         }
