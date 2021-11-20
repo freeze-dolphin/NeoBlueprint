@@ -53,7 +53,7 @@ public class SlimeProvider {
                                 if (i != 4)
                                     gui.getInventory().setItem(i + 36, new ItemBuilder(Material.STAINED_GLASS_PANE).addDamage(7));
                             }
-                            gui.getInventory().setItem(40, item.asOne());
+                            gui.getInventory().setItem(40, BlueprintUtils.getTarget(id));
                             for (ItemStack ingredient : BlueprintUtils.getRecipe(id)) {
                                 gui.getInventory().addItem(ingredient);
                             }
