@@ -9,6 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import redempt.redlib.commandmanager.CommandParser;
 import redempt.redlib.configmanager.ConfigManager;
 
+import java.io.File;
+
 @Getter
 public class PlugGividado extends JavaPlugin {
 
@@ -20,6 +22,14 @@ public class PlugGividado extends JavaPlugin {
     public void onEnable() {
 
         plug = this;
+
+        File stg = new File(this.getDataFolder().getPath() + File.separator + "storage");
+        if (!stg.exists()) {
+            if (!stg.mkdirs()) {
+                this.setEnabled(false);
+            }
+        }
+
         cman = new ConfigManager(this).register(new ConfigBus()).saveDefaults().load();
         new CommandParser(getPlug().getResource("command.rdcml")).parse().register(getPlug().getDescription().getName(),
                 new CommandBus(this));
