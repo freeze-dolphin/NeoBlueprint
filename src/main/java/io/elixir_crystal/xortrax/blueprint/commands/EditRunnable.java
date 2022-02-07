@@ -52,9 +52,10 @@ public class EditRunnable implements Runnable {
 
             ItemStack hand = yml.getItemStack("target");
 
-            InventoryGUI gui = new InventoryGUI(27, "§6编辑蓝图 §8(" + getId() + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
+            InventoryGUI gui = new InventoryGUI(27, "§6编辑蓝图 §8(" + id + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
             for (int i = 0; i < 27; i++) {
                 gui.openSlot(i);
+                gui.getInventory().setItem(i, yml.getItemStack("recipe." + i));
             }
 
             gui.setOnDestroy(() -> {
