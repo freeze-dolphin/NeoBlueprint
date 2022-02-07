@@ -45,14 +45,14 @@ public class EditRunnable implements Runnable {
             File f = new File(getPlug().getDataFolder().getPath() + SEP + "storage" + SEP + id + ".yml");
 
             if (!f.exists()) {
-                throw new FileNotFoundException();
+                throw new FileNotFoundException("Blueprint not found.");
             }
 
             YamlConfiguration yml = YamlConfiguration.loadConfiguration(f);
 
             ItemStack hand = yml.getItemStack("target");
 
-            InventoryGUI gui = new InventoryGUI(27, "§9编辑蓝图 §8(" + getId() + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
+            InventoryGUI gui = new InventoryGUI(27, "§6编辑蓝图 §8(" + getId() + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
             for (int i = 0; i < 27; i++) {
                 gui.openSlot(i);
             }
@@ -62,9 +62,12 @@ public class EditRunnable implements Runnable {
                     if (!f.delete()) throw new IOException("Unable to edit (delete) " + f.getName());
                     BlueprintUtils.createRecipe(getId(), hand, gui.getInventory().getContents());
                     getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&aSuccessfully edited"));
-                    ((Player) getSender()).getInventory().addItem(new ItemBuilder(Material.PAPER)
-                            .setName("§d蓝图§r")
-                            .setLore("", "§f合成目标: §e" + BlueprintUtils.getTarget(getId()).getItemMeta().getDisplayName(), "§f蓝图编号: §e" + getId()));
+
+                    if (getId() != null) {
+                        ((Player) getSender()).getInventory().addItem(new ItemBuilder(Material.PAPER)
+                                .setName("§d蓝图§r")
+                                .setLore("", "§f合成目标: §e" + BlueprintUtils.getTarget(getId()).getItemMeta().getDisplayName(), "§f蓝图编号: §e" + getId()));
+                    }
                 } catch (Exception e) {
                     getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&cError occurred: " + e.getMessage()));
                 }
