@@ -21,6 +21,12 @@ blueprint,bpt {
         hook get
     }
 
+    edit string:id? {
+        permission blueprint.cmd.edit
+        help Edit a blueprint with specific id.
+        hook edit
+    }
+
     reload {
         permission blueprint.cmd.reload
         help Reload configuration.
