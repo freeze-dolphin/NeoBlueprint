@@ -60,7 +60,7 @@ public class EditRunnable implements Runnable {
 
             gui.setOnDestroy(() -> {
                 try {
-                    BlueprintUtils.createRecipeForce(getId(), hand, gui.getInventory().getContents());
+                    BlueprintUtils.editRecipe(id, gui.getInventory().getContents());
                     getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&aSuccessfully edited"));
 
                     if (getId() != null) {
