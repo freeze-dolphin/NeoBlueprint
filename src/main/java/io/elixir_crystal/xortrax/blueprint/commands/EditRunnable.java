@@ -15,7 +15,6 @@ import redempt.redlib.misc.FormatUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 @AllArgsConstructor
 @Getter
@@ -53,6 +52,7 @@ public class EditRunnable implements Runnable {
             ItemStack hand = yml.getItemStack("target");
 
             InventoryGUI gui = new InventoryGUI(27, "§6编辑蓝图 §8(" + id + "§8) [§f" + hand.getItemMeta().getDisplayName() + "§8]");
+            gui.setReturnsItems(false);
             for (int i = 0; i < 27; i++) {
                 gui.openSlot(i);
                 gui.getInventory().setItem(i, yml.getItemStack("recipe." + i));
@@ -60,8 +60,7 @@ public class EditRunnable implements Runnable {
 
             gui.setOnDestroy(() -> {
                 try {
-                    if (!f.delete()) throw new IOException("Unable to edit (delete) " + f.getName());
-                    BlueprintUtils.createRecipe(getId(), hand, gui.getInventory().getContents());
+                    BlueprintUtils.createRecipeForce(getId(), hand, gui.getInventory().getContents());
                     getSender().sendMessage(FormatUtils.color(getPlug().getPrefix() + "&aSuccessfully edited"));
 
                     if (getId() != null) {

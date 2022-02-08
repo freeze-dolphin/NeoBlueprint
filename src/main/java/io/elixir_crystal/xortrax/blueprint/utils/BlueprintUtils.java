@@ -52,6 +52,26 @@ public class BlueprintUtils {
         yml.save(f);
     }
 
+    public static void createRecipeForce(String id, ItemStack target, ItemStack... ingredients) throws IOException, IllegalStateException {
+        File f = new File(DPTH + SEP + "storage" + SEP + id + ".yml");
+
+        if (!f.exists()) {
+            if (!f.createNewFile()) throw new IOException("Unable to edit recipe.");
+        }
+
+        YamlConfiguration yml = YamlConfiguration.loadConfiguration(f);
+        yml.set("target", target);
+
+        for (int i = 0; i < 21; i++) {
+            if (yml.contains("recipe." + i)) {
+                yml.set("recipe." + i,
+                        (i <= ingredients.length - 1) ? ingredients[i] : null);
+            }
+        }
+
+        yml.save(f);
+    }
+
     public static ItemStack[] getRecipe(String id) throws IOException {
         File f = new File(DPTH + SEP + "storage" + SEP + id + ".yml");
 
