@@ -1,10 +1,16 @@
 name: Blueprint
-
-author: Freeze_Dolphin
-
-main: io.elixir_crystal.xortrax.blueprint.PlugGividado
 version: ${project.version}
+author: Sapphira Tempest
+description: Blueprint crafting system designed for HAPPYLAND.
 
+main: io.sn.blueprint.NeoBlueprintCore
 depend:
-  - RedLib
   - Slimefun
+  - Dumortierite
+  - NBTAPI
+  - CommandAPI
+
+api-version: 1.19
+
+libraries:
+  - org.clojure:clojure:${clojure.version}

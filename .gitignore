@@ -16,3 +16,5 @@ out/
 .settings/
 
 dependency-reduced-pom.xml
+
+libs/
