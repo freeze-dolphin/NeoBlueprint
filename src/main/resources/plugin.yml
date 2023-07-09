@@ -1,4 +1,4 @@
-name: Blueprint
+name: NeoBlueprint
 version: ${project.version}
 author: Sapphira Tempest
 description: Blueprint crafting system designed for HAPPYLAND.
